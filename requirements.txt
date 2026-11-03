@@ -1,0 +1,27 @@
+# Chaos E-commerce Pipeline — Python dependencies
+# Install with:  pip install -r requirements.txt
+# Python 3.10–3.12 recommended (dbt and Snowflake support these best)
+#
+# NOTE: Airflow is NOT listed here on purpose. It runs in Docker via the
+# official docker-compose file (Phase 10). Installing Airflow with pip in the
+# same environment as dbt often causes dependency conflicts.
+
+# ---------- Phase 2: Chaos simulator ----------
+faker>=30.0,<40.0           # fake customers, addresses, products
+pandas>=2.2,<3.0            # shaping data
+pyarrow>=15.0               # writing Parquet files (version left open so the Snowflake connector can choose a compatible one)
+
+# ---------- Phase 3–4: Snowflake ingestion ----------
+snowflake-connector-python[pandas]>=3.12,<4.0   # PUT / COPY INTO, plus write_pandas
+python-dotenv>=1.0,<2.0     # load credentials from .env
+
+# ---------- Phase 5–9: dbt transformations ----------
+dbt-core>=1.9,<2.0
+dbt-snowflake>=1.9,<2.0
+# dbt packages (dbt_utils, dbt_expectations) go in dbt_project/packages.yml, not here
+
+# ---------- Phase 13: Code quality & tests ----------
+pytest>=8.0,<9.0            # simulator unit tests
+ruff>=0.6                   # Python linting + formatting
+sqlfluff>=3.0,<4.0          # SQL linting
+sqlfluff-templater-dbt>=3.0,<4.0   # lets sqlfluff understand dbt Jinja

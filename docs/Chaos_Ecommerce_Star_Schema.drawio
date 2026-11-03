@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" modified="2026-11-03T14:40:00.000Z" agent="Claude" version="24.7.17" type="device">
+  <diagram id="star-ecommerce" name="Dimensional Star Schema">
+    <mxGraphModel dx="1500" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="CHAOS E-COMMERCE  |  DIMENSIONAL STAR SCHEMA" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1;fontColor=#12243a;" vertex="1" parent="1">
+          <mxGeometry x="45" y="26" width="1140" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Phase 1 design  •  revision 2  •  Business process: sales  •  Fact grain: one row per order item" style="text;html=1;align=left;verticalAlign=middle;fontSize=14;fontColor=#51647a;" vertex="1" parent="1">
+          <mxGeometry x="45" y="76" width="1140" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="customer" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1d4ed8;strokeWidth=2;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="340" height="405" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_head" value="dim_customer  •  SCD Type 2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1d4ed8;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=18;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="42" y="162" width="336" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r0" value="customer_key   :   string     [PK, hash]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#0f766e;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="204" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r1" value="customer_id   :   string     [natural key]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="231" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r2" value="first_name   :   string" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="258" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r3" value="last_name   :   string" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="285" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r4" value="email   :   string" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="312" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r5" value="address_line / city   :   string" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="339" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r6" value="region / country   :   string" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="366" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r7" value="postal_code   :   string" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="393" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r8" value="signup_date   :   date" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="420" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r9" value="customer_segment   :   string" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="447" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r10" value="valid_from   :   timestamp     [SCD2]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="474" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r11" value="valid_to   :   timestamp     [SCD2]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="501" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="customer_r12" value="is_current   :   boolean     [SCD2]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="528" width="324" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="product" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1d4ed8;strokeWidth=2;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="840" y="160" width="320" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="product_head" value="dim_product  •  SCD Type 1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1d4ed8;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=18;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="842" y="162" width="316" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="product_r0" value="product_key   :   string     [PK, hash]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#0f766e;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="848" y="204" width="304" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="product_r1" value="product_id   :   string     [natural key]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="848" y="231" width="304" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="product_r2" value="product_name   :   string" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="848" y="258" width="304" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="product_r3" value="category / subcategory   :   string" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="848" y="285" width="304" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="product_r4" value="brand   :   string" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="848" y="312" width="304" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="product_r5" value="list_price   :   decimal(10,2)     [current only]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="848" y="339" width="304" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="product_r6" value="cost_price   :   decimal(10,2)     [current only]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="848" y="366" width="304" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="product_r7" value="is_active   :   boolean" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="848" y="393" width="304" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="date" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1d4ed8;strokeWidth=2;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="615" width="340" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="date_head" value="dim_date  •  calendar" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1d4ed8;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=18;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="42" y="617" width="336" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="date_r0" value="date_key   :   integer     [PK, YYYYMMDD]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#0f766e;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="659" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="date_r1" value="full_date   :   date" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="686" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="date_r2" value="day_of_month   :   integer" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="713" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="date_r3" value="month   :   integer" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="740" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="date_r4" value="month_name   :   string" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="767" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="date_r5" value="quarter   :   integer" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="794" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="date_r6" value="year   :   integer" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="821" width="324" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="date_r7" value="day_of_week   :   string" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="48" y="848" width="324" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="fact" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0f766e;strokeWidth=2;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="435" y="200" width="355" height="410" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_head" value="fct_order_items  •  line grain" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0f766e;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=18;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="437" y="202" width="351" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r0" value="order_item_id   :   string     [unique business ID, MERGE key]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="244" width="339" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r1" value="order_id   :   string     [degenerate dimension]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="271" width="339" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r2" value="line_number   :   integer     [degenerate dimension]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="298" width="339" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r3" value="customer_key   :   string     [FK, point-in-time version]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#0f766e;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="325" width="339" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r4" value="product_key   :   string     [FK]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#0f766e;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="352" width="339" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r5" value="order_date_key   :   integer     [FK]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#0f766e;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="379" width="339" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r6" value="order_placed_at   :   timestamp     [SCD2 join basis]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#0f766e;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="406" width="339" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r7" value="order_status   :   string     [degenerate dimension]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="433" width="339" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r8" value="quantity   :   integer     [measure, additive]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="460" width="339" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r9" value="unit_price   :   decimal(10,2)     [measure, NON-additive]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="487" width="339" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r10" value="discount_amount   :   decimal(10,2)     [measure, additive]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="514" width="339" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r11" value="line_total   :   decimal(12,2)     [measure, additive]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#ffffff;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="541" width="339" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fact_r12" value="cost_amount   :   decimal(12,2)     [measure, frozen at sale]" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fillColor=#f1f5f9;strokeColor=none;fontColor=#1f2937;fontSize=12;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="443" y="568" width="339" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="relation_c" value="1 : many" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748b;strokeWidth=2;startArrow=ERone;startFill=0;startSize=12;endArrow=ERmany;endFill=0;endSize=14;" edge="1" parent="1" source="customer" target="fact">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="408" y="405" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="relation_p" value="1 : many" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748b;strokeWidth=2;startArrow=ERone;startFill=0;startSize=12;endArrow=ERmany;endFill=0;endSize=14;" edge="1" parent="1" source="product" target="fact">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="815" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="relation_d" value="1 : many" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748b;strokeWidth=2;startArrow=ERone;startFill=0;startSize=12;endArrow=ERmany;endFill=0;endSize=14;" edge="1" parent="1" source="date" target="fact">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="410" y="740" />
+              <mxPoint x="410" y="590" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="note_title" value="MODELING DECISIONS TO REVIEW" style="text;html=1;fontColor=#0f172a;fontStyle=1;fontSize=15;align=left;" vertex="1" parent="1">
+          <mxGeometry x="840" y="470" width="320" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="notes" value="• Surrogate keys are deterministic hashes, not sequences, so reruns and backfills leave existing facts valid.&lt;br&gt;• Source order lines are deduplicated in staging before the fact is built.&lt;br&gt;• customer_key resolves the SCD2 version valid at order time: order_placed_at between valid_from and valid_to.&lt;br&gt;• unit_price and cost_amount are frozen on the fact. dim_product holds current prices only and overwrites.&lt;br&gt;• line_total = quantity × unit_price − discount_amount.&lt;br&gt;• No fct_orders in v1, so shipping_cost and order_total stay out of marts. The header-vs-lines test lives in staging.&lt;br&gt;• order_status is carried so cancelled and returned orders can be excluded. Decide the eligible set before publishing revenue.&lt;br&gt;• dim_payment omitted; payment_method would be a degenerate column if needed." style="rounded=1;html=1;whiteSpace=wrap;fillColor=#eff6ff;strokeColor=#93c5fd;fontColor=#193252;fontSize=12;align=left;verticalAlign=top;spacing=14;" vertex="1" parent="1">
+          <mxGeometry x="840" y="507" width="340" height="330" as="geometry" />
+        </mxCell>
+
+        <mxCell id="footer" value="Source context: customers, products, orders, order_items. This is a proposed analytical design—not a deployed Snowflake schema." style="text;html=1;fontColor=#64748b;fontSize=12;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="940" width="1140" height="42" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

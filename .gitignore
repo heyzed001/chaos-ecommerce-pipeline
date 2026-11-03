@@ -218,3 +218,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# Project-local secrets, data and build output
+/.gitignore/
+/data/
+.env.*
+!.env.example
+/dbt_project/dbt_packages/
+/dbt_project/logs/
+/dbt_project/profiles.yml
+/logs/
+/.vscode/

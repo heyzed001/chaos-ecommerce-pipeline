@@ -1,0 +1,61 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="6owley__Ftz2KvwJxfdF">
+    <mxGraphModel dx="933" dy="617" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-10" edge="1" parent="1" source="f1d2fqiu0LwEcfi_6PRG-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;" target="f1d2fqiu0LwEcfi_6PRG-9" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="Airflow Daily (DAG)" vertex="1">
+          <mxGeometry height="60" width="410" x="170" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-12" edge="1" parent="1" source="f1d2fqiu0LwEcfi_6PRG-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;" target="f1d2fqiu0LwEcfi_6PRG-11" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-9" parent="1" style="whiteSpace=wrap;html=1;rounded=1;roundedPerimeter=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" value="Python Simulator&lt;div&gt;Faker (ingestion)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="130" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-14" edge="1" parent="1" source="f1d2fqiu0LwEcfi_6PRG-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;" target="f1d2fqiu0LwEcfi_6PRG-13" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-11" parent="1" style="whiteSpace=wrap;html=1;rounded=1;roundedPerimeter=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" value="&lt;br&gt;&lt;div&gt;Dataset&lt;/div&gt;&lt;div&gt;(Daoly parcquet file)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="294" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-16" edge="1" parent="1" source="f1d2fqiu0LwEcfi_6PRG-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;" target="f1d2fqiu0LwEcfi_6PRG-15" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-13" parent="1" style="whiteSpace=wrap;html=1;rounded=1;roundedPerimeter=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" value="Ingestion script&lt;div&gt;Copy into(Snowflake)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="490" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-24" edge="1" parent="1" source="f1d2fqiu0LwEcfi_6PRG-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;" target="f1d2fqiu0LwEcfi_6PRG-23" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-15" parent="1" style="whiteSpace=wrap;html=1;rounded=1;roundedPerimeter=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="" vertex="1">
+          <mxGeometry height="190" width="540" x="100" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-19" edge="1" parent="1" source="f1d2fqiu0LwEcfi_6PRG-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;" target="f1d2fqiu0LwEcfi_6PRG-18" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-17" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="RAW" vertex="1">
+          <mxGeometry height="60" width="120" x="130" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-21" edge="1" parent="1" source="f1d2fqiu0LwEcfi_6PRG-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;" target="f1d2fqiu0LwEcfi_6PRG-20" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-18" parent="1" style="whiteSpace=wrap;html=1;rounded=1;roundedPerimeter=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Ingestion&lt;div&gt;(data cleaning and deduplicate)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="294" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-20" parent="1" style="whiteSpace=wrap;html=1;rounded=1;roundedPerimeter=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;div&gt;Data Mart&lt;/div&gt;&lt;div&gt;Star schema (SCD2&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="460" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-22" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;perimeterSpacing=10;imageWidth=50;imageHeight=250;" value="SNOWFLAKE TRANSFORMATION&lt;div&gt;dbt tranformation on each layer&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="160" x="440" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="f1d2fqiu0LwEcfi_6PRG-23" parent="1" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=1;roundedPerimeter=1;" value="Dashboard&lt;div&gt;(streamlit):optional&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="310" y="520" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
