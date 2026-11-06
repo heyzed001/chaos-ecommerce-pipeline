@@ -1,0 +1,19 @@
+version: 2
+
+snapshots:
+  - name: snap_customers
+    description: Customer SCD2 history using the source version effective timestamp.
+    relation: ref('int_customer_snapshot_input')
+    config:
+      unique_key: customer_id
+      strategy: timestamp
+      updated_at: updated_at
+      pre_hook:
+        - "{{ validate_customer_snapshot_input() }}"
+    columns:
+      - name: dbt_scd_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests: [not_null]
+      - name: dbt_valid_from
+        data_tests: [not_null]

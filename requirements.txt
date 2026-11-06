@@ -16,12 +16,13 @@ snowflake-connector-python[pandas]>=3.12,<4.0   # PUT / COPY INTO, plus write_pa
 python-dotenv>=1.0,<2.0     # load credentials from .env
 
 # ---------- Phase 5–9: dbt transformations ----------
-dbt-core>=1.9,<2.0
+dbt-core>=1.10.5,<2.0
 dbt-snowflake>=1.9,<2.0
 # dbt packages (dbt_utils, dbt_expectations) go in dbt_project/packages.yml, not here
 
 # ---------- Phase 13: Code quality & tests ----------
 pytest>=8.0,<9.0            # simulator unit tests
+sqlglot>=26.0              # offline Snowflake SQL parsing and fixture execution
 ruff>=0.6                   # Python linting + formatting
 sqlfluff>=3.0,<4.0          # SQL linting
 sqlfluff-templater-dbt>=3.0,<4.0   # lets sqlfluff understand dbt Jinja

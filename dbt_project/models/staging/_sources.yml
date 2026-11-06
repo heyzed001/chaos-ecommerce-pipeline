@@ -1,0 +1,89 @@
+version: 2
+
+sources:
+  - name: raw
+    database: "{{ env_var('SNOWFLAKE_DATABASE') }}"
+    schema: RAW
+    description: >
+      Landing zone written by ingestion/load.py. Each record is stored whole in
+      a VARIANT column so that a new source field never breaks ingestion.
+      Nothing here is cleaned, typed or deduplicated.
+
+    # FRESHNESS
+    # Measured on _loaded_at, which is when this pipeline wrote the row. That
+    # answers "did my pipeline run", which is the question Phase 10 needs.
+    # Measuring the source's own _emitted_at instead would answer "is the
+    # source producing data", a different question and not one this project
+    # controls.
+    #
+    # Warn at 24h because the pipeline is daily; a missed run should be visible
+    # but not fail the DAG. Error at 48h, by which point two runs have been
+    # missed and something is genuinely wrong.
+    config:
+      loaded_at_field: _loaded_at
+      freshness:
+        warn_after:  {count: 24, period: hour}
+        error_after: {count: 48, period: hour}
+
+    tables:
+      - name: customers
+        description: >
+          Daily full snapshot of the customer population. Address and segment
+          change over time, which is what dim_customer tracks as SCD Type 2.
+          Phase 7 snapshots this on updated_at.
+        columns: &raw_columns
+          - name: _record
+            description: The entire source record as received.
+            data_tests:
+              - not_null
+
+          - name: _event_id
+            description: >
+              Unique per emitted event. A duplicate of the same business record
+              still gets its own _event_id, which is what lets staging tell a
+              true duplicate from a legitimate re-send.
+            data_tests:
+              # This is the test that guards idempotency. Business keys such as
+              # order_id are deliberately NOT unique in RAW -- duplicates are
+              # injected on purpose and staging deduplicates them. But
+              # _event_id must be unique, because a repeat here means the
+              # loader appended a batch instead of replacing it.
+              - unique
+              - not_null
+
+          - name: _batch_date
+            description: Which daily file the row arrived in. The reload key.
+            data_tests:
+              - not_null
+
+          - name: _source_file
+            description: Staged file the row came from, via METADATA$FILENAME.
+            data_tests:
+              - not_null
+
+          - name: _loaded_at
+            description: When this pipeline wrote the row. Drives freshness.
+            data_tests:
+              - not_null
+
+      - name: products
+        description: >
+          Daily full snapshot of the catalogue. Modelled as SCD Type 1, so
+          list_price and cost_price hold current values only. Margin is
+          computed from unit_cost on the order line instead.
+        columns: *raw_columns
+
+      - name: orders
+        description: >
+          Order headers, one row per order, emitted per batch rather than as a
+          snapshot. Carries the injected chaos: duplicates, late arrivals,
+          broken order_total values, and from the drift cutover an extra
+          loyalty_tier field inside _record.
+        columns: *raw_columns
+
+      - name: order_items
+        description: >
+          Order lines, the grain fct_order_items is built on. Carries
+          unit_price and unit_cost frozen at the moment of sale, plus the
+          negative-quantity defect.
+        columns: *raw_columns

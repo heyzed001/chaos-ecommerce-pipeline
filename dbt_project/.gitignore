@@ -1,0 +1,16 @@
+# Keep local configuration and generated artifacts out of fresh clones.
+.env
+.env.*
+!.env.example
+.user.yml
+profiles.yml
+target/
+dbt_packages/
+logs/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.p8
+*.pem
+snowflake_key*
+dbt_internal_packages/

@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: Latest customer state; missing contact details are retained and flagged.
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: updated_at
+        data_tests: [not_null]
+      - name: signup_date
+        data_tests: [not_null]
+
+  - name: stg_products
+    description: Latest catalogue state. Historical charged cost comes from order items.
+    columns:
+      - name: product_id
+        data_tests: [unique, not_null]
+      - name: updated_at
+        data_tests: [not_null]
+
+  - name: stg_orders
+    description: One row per order, retaining reported totals and optional loyalty tier.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+      - name: order_placed_at
+        data_tests: [not_null]
+
+  - name: stg_order_items
+    description: One row per order item; negative quantities remain visible for quality checks.
+    columns:
+      - name: order_item_id
+        data_tests: [unique, not_null]
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+      - name: product_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id

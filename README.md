@@ -20,9 +20,35 @@ On macOS or Linux, use `python3.12 -m venv .venv` and
 `source .venv/bin/activate` instead. Select the new `.venv` interpreter in your
 editor. Virtual environments are machine-specific and must be recreated.
 
-Credentials are not committed. Recreate any needed `.env` file locally using
-your credentials. Airflow runs separately in Docker; do not install it into
-the dbt environment.
+Create local configuration from the credential-free templates:
+
+```powershell
+Copy-Item .env.example .env
+Copy-Item dbt_project\profiles.yml.example dbt_project\profiles.yml
+```
+
+Edit root `.env` with your account and credentials; keep real secrets out of
+Git. Ingestion reads this file independently of the working directory. Your
+existing `.gitignore/.env` is supported only as a legacy fallback when root
+`.env` is absent; new clones use a normal `.gitignore` file, not a directory.
+Keep root `.env` as the authoritative local configuration.
+
+Load variables into PowerShell and install the dbt packages:
+
+```powershell
+. .\dbt_project\load_env.ps1
+dbt deps --project-dir dbt_project --profiles-dir dbt_project
+dbt debug --project-dir dbt_project --profiles-dir dbt_project
+```
+
+On bash-compatible shells, use `set -a; source .env; set +a` instead of the
+PowerShell helper. The dbt profile template contains environment references,
+not credentials. `profiles.yml` stays local and ignored; its `.example` is
+included in Git. If your VS Code dbt extension requires a project-local `.env`,
+copy root `.env` to `dbt_project/.env` and refresh that copy after credential
+changes. Both real environment files are ignored.
+
+Airflow runs separately in Docker; do not install it into the dbt environment.
 
 ## Generate source data
 

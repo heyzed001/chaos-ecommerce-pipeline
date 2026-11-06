@@ -1,0 +1,178 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: >
+      One row per calendar day between the configured inclusive bounds.
+      Independent of order activity. Stable YYYYMMDD keys, English names,
+      Gregorian calendar attributes and ISO week attributes. No holiday or
+      fiscal calendar assumptions are included.
+    columns:
+      - name: date_key
+        description: Stable integer YYYYMMDD key for future fact-table date joins.
+        data_tests: [unique, not_null]
+      - name: full_date
+        description: The calendar date; exactly one row for every included day.
+        data_tests: [unique, not_null]
+      - name: day_of_month
+        data_tests: [not_null]
+      - name: month
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                quote: false
+      - name: month_name
+        data_tests: [not_null]
+      - name: quarter
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4]
+                quote: false
+      - name: year
+        data_tests: [not_null]
+      - name: day_of_week_iso
+        description: ISO weekday number; Monday is 1 and Sunday is 7.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7]
+                quote: false
+      - name: day_of_week
+        description: Full English weekday name.
+        data_tests: [not_null]
+      - name: iso_week
+        data_tests: [not_null]
+      - name: iso_year
+        description: ISO week-numbering year, which can differ from calendar year near New Year.
+        data_tests: [not_null]
+      - name: is_weekend
+        description: True for Saturday or Sunday; not a country-specific working-day flag.
+        data_tests: [not_null]
+
+  - name: dim_product
+    description: Current product catalogue (Type 1), with a deterministic hash of product_id.
+    columns:
+      - name: product_key
+        data_tests: [unique, not_null]
+      - name: product_id
+        data_tests: [unique, not_null]
+
+  - name: dim_customer
+    description: >
+      One row per snapshotted customer version (SCD2). Surrogate key hashes the
+      customer ID and a fixed-format valid_from timestamp, excluding attributes
+      and reload time. Includes historical versions and one current version.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [customer_id, valid_from]
+    columns:
+      - name: customer_key
+        data_tests: [unique, not_null]
+      - name: customer_version_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests: [not_null]
+      - name: valid_from
+        data_tests: [not_null]
+      - name: is_current
+        data_tests: [not_null]
+
+  - name: fct_order_items
+    description: >
+      One row per business order item. Incremental MERGE on order_item_id
+      inserts new lines and updates matching lines. Charged unit costs are
+      retained; status-based revenue excludes cancelled and returned orders.
+      Intentional source defects remain present and flagged, not repaired.
+    columns:
+      - name: order_item_id
+        data_tests: [unique, not_null]
+      - name: order_id
+        data_tests: [not_null]
+      - name: customer_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_key
+      - name: product_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: product_key
+      - name: order_date_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: _source_loaded_at
+        description: Most recent RAW load timestamp for the item's line or order header.
+        data_tests: [not_null]
+      - name: is_revenue_eligible
+        data_tests: [not_null]
+
+  - name: revenue_line_items
+    description: >
+      Ephemeral reporting policy over facts. Valid positive-quantity lines with
+      matching arithmetic are eligible when their order status permits revenue.
+      Missing/invalid costs do not erase revenue but prevent complete margin totals.
+
+  - name: mart_daily_revenue
+    description: >
+      Daily eligible line revenue by order date and currency, excluding shipping.
+      Contains diagnostic counts; cost and margin are NULL when any included
+      line has a missing or invalid cost. Only dates/currencies present in facts
+      are emitted. Gross sales minus discounts equals net line revenue.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [order_date_key, order_currency]
+    columns:
+      - name: order_date_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: order_date
+        data_tests: [not_null]
+      - name: order_currency
+        data_tests: [not_null]
+      - name: revenue_amount
+        data_tests: [not_null]
+
+  - name: mart_daily_region_revenue
+    description: >
+      Daily eligible line revenue by currency, country and customer region at
+      order time. Geography uses the fact's historical customer_key. Unmatched
+      geography remains in a NULL group, so sales are not lost in an inner join.
+      A customer move does not relabel older orders with today's region.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [order_date_key, order_currency, customer_country, customer_region]
+    columns:
+      - name: order_date_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: order_date
+        data_tests: [not_null]
+      - name: order_currency
+        data_tests: [not_null]
+      - name: revenue_amount
+        data_tests: [not_null]

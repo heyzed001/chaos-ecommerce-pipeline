@@ -1,0 +1,63 @@
+name: 'chaos_ecommerce'
+version: '1.0.0'
+config-version: 2
+
+profile: 'chaos_ecommerce'
+
+model-paths:    ["models"]
+macro-paths:    ["macros"]
+snapshot-paths: ["snapshots"]
+test-paths:     ["tests"]
+seed-paths:     ["seeds"]
+analysis-paths: ["analyses"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Business decisions live here, not buried in a model's WHERE clause. Anyone
+# reviewing the project can see the pipeline's assumptions in one place, and
+# Phase 11 can change one of them without hunting through SQL.
+vars:
+  # Inclusive calendar bounds, independent of order volume and run date.
+  dim_date_start_date: '2024-01-01'
+  dim_date_end_date: '2028-12-31'
+
+  # Reprocess this many arrival-batch days behind the latest batch in the fact.
+  # Eight covers the simulator's seven-day delay plus next-day resend. New IDs,
+  # recently loaded corrections and changed dimension keys are also included
+  # independently of this window, so old backfills are not silently skipped.
+  late_arrival_lookback_days: 8
+
+  # Orders in these statuses are excluded from revenue. Kept in the fact table
+  # and flagged rather than filtered out, so reversals stay visible.
+  excluded_revenue_statuses: ['cancelled', 'returned']
+
+models:
+  chaos_ecommerce:
+    # Views cost nothing to store and are always current. Materialise as a
+    # table only where query cost justifies it.
+    staging:
+      +schema: staging
+      +materialized: view
+
+    # Views rather than ephemeral, so each step can be queried while you are
+    # debugging. Ephemeral models get inlined as CTEs and leave nothing to
+    # inspect in the warehouse.
+    intermediate:
+      +schema: staging
+      +materialized: view
+
+    # Marts are read repeatedly, so these are real tables.
+    marts:
+      +schema: marts
+      +materialized: table
+
+snapshots:
+  chaos_ecommerce:
+    +schema: snapshots
+    # Snapshot tables accumulate history one run at a time and cannot be
+    # rebuilt. Their own schema keeps them clear of the two layers that are
+    # dropped and rebuilt freely.
+
+# Source freshness and tests are defined in models/staging/_sources.yml.
