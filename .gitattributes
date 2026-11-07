@@ -1,0 +1,2 @@
+*.sh text eol=lf
+airflow/Dockerfile text eol=lf

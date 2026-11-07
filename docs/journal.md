@@ -164,3 +164,48 @@ reload results rather than reporting PASS after no reload. It remains a row-coun
 check, not proof of identical contents. All 80 offline tests passed; dbt parsing
 with the new profile template and PowerShell root-env loading passed. No
 Snowflake models, snapshot replays, commits or pushes were executed for these fixes.
+
+## Generic model tests - 2026-11-07
+
+Expanded generic tests across all 14 dbt models and the customer snapshot.
+Coverage now includes unique/non-null business and version keys, required
+fields, real foreign-key relationships, categorical domains, booleans and
+calendar attributes. Summary grains use composite uniqueness tests. SCD2
+customer IDs repeat legitimately and are not tested as unique natural keys.
+
+Kept intended nullable fields nullable: contacts, optional loyalty tier,
+valid_to for current versions, missing unit costs and unknown summary geography.
+Non-null quantity tests do not replace future positive-quantity business checks.
+The current source currency contract is NGN; new currencies require an explicit
+accepted-values update rather than being converted or combined automatically.
+
+Validation: dbt parsing passed with 310 generic and 10 singular tests. All 80
+offline Python checks passed. New warehouse tests remain for manual execution;
+the earlier successful build does not certify these newly added definitions.
+Policy and command: `dbt_project/tests/README.md`.
+
+## Phase 10 - Airflow orchestration - 2026-11-07
+
+Added the paused `chaos_ecommerce_daily` DAG with configuration validation,
+dbt package preparation, deterministic daily generation, RAW loading, source
+freshness, dated customer snapshots and tested dbt model builds. Schedule is
+03:00 Africa/Lagos; the first catchup batch is November 4, after manual history
+through November 3. Runs are serial with dependencies on prior-run success,
+two retries and explicit task/run timeouts. Manual batch dates are validated.
+
+Extended Compose with pipeline mounts and a custom Airflow 3.2.2/Python 3.12
+image. dbt and ingestion dependencies are isolated in `/opt/pipeline-venv`.
+Snowflake settings are supplied only to the worker from ignored root `.env`;
+credentials are not included in the image. Added artifact/config exclusions,
+Linux shell line-ending rules and a manual setup/recovery runbook.
+
+Validation: image built; dependency consistency and imports passed; dbt deps
+and parsing passed inside a one-off worker. All 90 local tests and six real
+Airflow import/template/scheduling checks passed. No DAG tasks, Snowflake
+queries, loads, snapshots or dbt builds were executed by these validation steps.
+The existing running services were not recreated. Apply the new image/mounts
+with `docker compose up -d --no-build` in airflow/, then review/unpause the DAG.
+Existing PostgreSQL volumes and login/history are preserved; do not reset them.
+
+Runbook: `airflow/README.md`. Live DAG execution remains pending the user's
+activation. No changes from this phase were committed or pushed.

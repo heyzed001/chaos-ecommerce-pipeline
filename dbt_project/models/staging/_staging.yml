@@ -1,55 +1,207 @@
 version: 2
-
 models:
-  - name: stg_customers
-    description: Latest customer state; missing contact details are retained and flagged.
-    columns:
-      - name: customer_id
-        data_tests: [unique, not_null]
-      - name: updated_at
-        data_tests: [not_null]
-      - name: signup_date
-        data_tests: [not_null]
-
-  - name: stg_products
-    description: Latest catalogue state. Historical charged cost comes from order items.
-    columns:
-      - name: product_id
-        data_tests: [unique, not_null]
-      - name: updated_at
-        data_tests: [not_null]
-
-  - name: stg_orders
-    description: One row per order, retaining reported totals and optional loyalty tier.
-    columns:
-      - name: order_id
-        data_tests: [unique, not_null]
-      - name: customer_id
-        data_tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('stg_customers')
-                field: customer_id
-      - name: order_placed_at
-        data_tests: [not_null]
-
-  - name: stg_order_items
-    description: One row per order item; negative quantities remain visible for quality checks.
-    columns:
-      - name: order_item_id
-        data_tests: [unique, not_null]
-      - name: order_id
-        data_tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('stg_orders')
-                field: order_id
-      - name: product_id
-        data_tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('stg_products')
-                field: product_id
+- name: stg_customers
+  description: Latest customer state; missing contact details are retained and flagged.
+  columns:
+  - name: customer_id
+    data_tests:
+    - unique
+    - not_null
+  - name: updated_at
+    data_tests:
+    - not_null
+  - name: signup_date
+    data_tests:
+    - not_null
+  - name: first_name
+    data_tests:
+    - not_null
+  - name: last_name
+    data_tests:
+    - not_null
+  - name: address_line
+    data_tests:
+    - not_null
+  - name: city
+    data_tests:
+    - not_null
+  - name: region
+    data_tests:
+    - not_null
+  - name: country
+    data_tests:
+    - not_null
+  - name: postal_code
+    data_tests:
+    - not_null
+  - name: customer_segment
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - retail
+          - wholesale
+  - name: is_email_missing
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - true
+          - false
+          quote: false
+  - name: is_phone_missing
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - true
+          - false
+          quote: false
+- name: stg_products
+  description: Latest catalogue state. Historical charged cost comes from order items.
+  columns:
+  - name: product_id
+    data_tests:
+    - unique
+    - not_null
+  - name: updated_at
+    data_tests:
+    - not_null
+  - name: product_name
+    data_tests:
+    - not_null
+  - name: category
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - Electronics
+          - Home
+          - Fashion
+          - Groceries
+  - name: subcategory
+    data_tests:
+    - not_null
+  - name: brand
+    data_tests:
+    - not_null
+  - name: list_price
+    data_tests:
+    - not_null
+  - name: cost_price
+    data_tests:
+    - not_null
+  - name: created_at
+    data_tests:
+    - not_null
+  - name: is_active
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - true
+          - false
+          quote: false
+- name: stg_orders
+  description: One row per order, retaining reported totals and optional loyalty tier.
+  columns:
+  - name: order_id
+    data_tests:
+    - unique
+    - not_null
+  - name: customer_id
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('stg_customers')
+          field: customer_id
+  - name: order_placed_at
+    data_tests:
+    - not_null
+  - name: order_status
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - delivered
+          - shipped
+          - placed
+          - cancelled
+          - returned
+  - name: order_currency
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - NGN
+  - name: payment_method
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - card
+          - transfer
+          - cash_on_delivery
+  - name: loyalty_tier
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - bronze
+          - silver
+          - gold
+          - platinum
+  - name: shipping_cost
+    data_tests:
+    - not_null
+  - name: order_total
+    data_tests:
+    - not_null
+  - name: updated_at
+    data_tests:
+    - not_null
+- name: stg_order_items
+  description: One row per order item; negative quantities remain visible for quality checks.
+  columns:
+  - name: order_item_id
+    data_tests:
+    - unique
+    - not_null
+  - name: order_id
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('stg_orders')
+          field: order_id
+  - name: product_id
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('stg_products')
+          field: product_id
+  - name: line_number
+    data_tests:
+    - not_null
+  - name: quantity
+    data_tests:
+    - not_null
+  - name: unit_price
+    data_tests:
+    - not_null
+  - name: discount_amount
+    data_tests:
+    - not_null
+  - name: line_total
+    data_tests:
+    - not_null

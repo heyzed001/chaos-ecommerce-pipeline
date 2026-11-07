@@ -1,34 +1,240 @@
 version: 2
-
 models:
-  - name: int_customer_snapshot_input
-    description: Ephemeral RAW projection for one replay date or the latest known customer state.
-  - name: int_customer_history
-    description: Customer versions with half-open validity intervals [valid_from, valid_to).
-    columns:
-      - name: customer_version_id
-        data_tests: [unique, not_null]
-      - name: customer_id
-        data_tests: [not_null]
-      - name: valid_from
-        data_tests: [not_null]
-      - name: is_current
-        data_tests: [not_null]
-  - name: int_order_items_enriched
-    description: >
-      One row per item with order details, current product attributes and
-      customer geography as of order time. Costs use the charged unit_cost,
-      never the latest catalogue cost. Shipping is excluded from line revenue
-      and margin. Defective records remain visible and are flagged.
-    columns:
-      - name: order_item_id
-        data_tests: [unique, not_null]
-      - name: order_id
-        data_tests: [not_null]
-      - name: product_id
-        data_tests: [not_null]
-      - name: customer_version_id
-        description: NULL when no captured historical version covers the order timestamp.
-      - name: is_revenue_eligible
-        description: Status-based eligibility only; invalid amounts or quantities are not repaired.
-        data_tests: [not_null]
+- name: int_customer_snapshot_input
+  description: Ephemeral RAW projection for one replay date or the latest known customer state.
+  columns:
+  - name: customer_id
+    data_tests:
+    - unique
+    - not_null
+  - name: first_name
+    data_tests:
+    - not_null
+  - name: last_name
+    data_tests:
+    - not_null
+  - name: address_line
+    data_tests:
+    - not_null
+  - name: city
+    data_tests:
+    - not_null
+  - name: region
+    data_tests:
+    - not_null
+  - name: country
+    data_tests:
+    - not_null
+  - name: postal_code
+    data_tests:
+    - not_null
+  - name: signup_date
+    data_tests:
+    - not_null
+  - name: updated_at
+    data_tests:
+    - not_null
+  - name: customer_segment
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values: &id001
+          - retail
+          - wholesale
+- name: int_customer_history
+  description: Customer versions with half-open validity intervals [valid_from, valid_to).
+  columns:
+  - name: customer_version_id
+    data_tests:
+    - unique
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('snap_customers')
+          field: dbt_scd_id
+  - name: customer_id
+    data_tests:
+    - not_null
+  - name: valid_from
+    data_tests:
+    - not_null
+  - name: is_current
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - true
+          - false
+          quote: false
+  - name: updated_at
+    data_tests:
+    - not_null
+  - name: signup_date
+    data_tests:
+    - not_null
+  - name: address_line
+    data_tests:
+    - not_null
+  - name: region
+    data_tests:
+    - not_null
+  - name: country
+    data_tests:
+    - not_null
+  - name: customer_segment
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values: *id001
+- name: int_order_items_enriched
+  description: 'One row per item with order details, current product attributes and customer geography
+    as of order time. Costs use the charged unit_cost, never the latest catalogue cost. Shipping is excluded
+    from line revenue and margin. Defective records remain visible and are flagged.
+
+    '
+  columns:
+  - name: order_item_id
+    data_tests:
+    - unique
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('stg_order_items')
+          field: order_item_id
+  - name: order_id
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('stg_orders')
+          field: order_id
+  - name: product_id
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('stg_products')
+          field: product_id
+  - name: customer_version_id
+    description: NULL when no captured historical version covers the order timestamp.
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('int_customer_history')
+          field: customer_version_id
+  - name: is_revenue_eligible
+    description: Status-based eligibility only; invalid amounts or quantities are not repaired.
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - true
+          - false
+          quote: false
+  - name: order_placed_at
+    data_tests:
+    - not_null
+  - name: order_status
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - delivered
+          - shipped
+          - placed
+          - cancelled
+          - returned
+  - name: order_currency
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - NGN
+  - name: payment_method
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - card
+          - transfer
+          - cash_on_delivery
+  - name: line_number
+    data_tests:
+    - not_null
+  - name: quantity
+    data_tests:
+    - not_null
+  - name: unit_price
+    data_tests:
+    - not_null
+  - name: discount_amount
+    data_tests:
+    - not_null
+  - name: line_total
+    data_tests:
+    - not_null
+  - name: customer_id
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('stg_customers')
+          field: customer_id
+  - name: order_date
+    data_tests:
+    - not_null
+  - name: _source_loaded_at
+    data_tests:
+    - not_null
+  - name: is_order_missing
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - true
+          - false
+          quote: false
+  - name: is_product_missing
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - true
+          - false
+          quote: false
+  - name: is_customer_history_missing
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - true
+          - false
+          quote: false
+  - name: is_quantity_invalid
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - true
+          - false
+          quote: false
+  - name: is_unit_cost_missing
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - true
+          - false
+          quote: false
