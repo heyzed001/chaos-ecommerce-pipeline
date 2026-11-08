@@ -1,5 +1,8 @@
 # Local Airflow orchestration
 
+Optional SMTP success/failure emails and Slack failure notifications are documented in
+`ALERTS.md`. Both channels are disabled until configured in `airflow/.env`.
+
 Airflow 3.2.2 runs in Docker with Celery, Redis and PostgreSQL. The custom image
 uses Python 3.12 and installs this project's requirements into a separate
 `/opt/pipeline-venv`. Airflow's own dependencies are not changed. Do not mount
@@ -10,16 +13,41 @@ the Windows virtual environment into a Linux container.
 `dags/chaos_ecommerce_daily.py` defines this chain:
 
 ```text
-validate_configuration -> prepare_dbt -> generate_data -> load_raw
-    -> check_source_freshness -> snapshot_customers -> build_models
+validate_configuration -> prepare_dbt -> capture_counts -> generate_data -> load_raw
+    -> check_source_freshness -> snapshot_customers -> build_models -> verify_counts
 ```
 
-- Scheduled at **03:00 Africa/Lagos**; the batch date is the preceding data
+For an idempotency check, manually rerun the latest successfully processed batch
+with `check_idempotency=true`. From PowerShell inside `airflow/` (replace the date
+with that latest batch):
+
+```powershell
+docker --% compose exec -T airflow-scheduler airflow dags trigger chaos_ecommerce_daily --conf "{\"batch_date\":\"2026-11-07\",\"check_idempotency\":true}"
+```
+
+The capture/verify tasks are no-ops for normal runs. When enabled, they compare
+total and selected-date counts in all four RAW tables, total counts in customer
+snapshots, customer/product dimensions and the order-item fact, and require
+unique, non-null fact keys. The baseline is saved under
+`airflow/logs/pipeline/<run_id>/idempotency_counts.json`; comparison counts and
+differences appear in `verify_counts` logs. Count changes fail the task and
+prevent the DAG success email. The baseline is never silently overwritten;
+if capture already wrote a file before failing, inspect it and start a new run
+rather than clearing capture. A successful verification can be safely retried.
+
+Use only unchanged input/configuration and an already loaded batch with rows
+in every RAW entity. Pause external writers during comparison. This checks
+count stability and fact keys, not equality of every field. RAW intentionally
+retains source duplicates; this does not require unique RAW event IDs. For new
+daily data leave the option off: counts are expected to grow. This check runs
+after writes and cannot roll them back if a mismatch is found.
+
+- Scheduled at **10:20 Africa/Lagos**; the batch date is the preceding data
   interval's local calendar date. It does not use the container's wall-clock
   date for scheduled source generation.
 - Starts with **2026-11-04**, immediately after the manually loaded and
-  snapshotted history through November 3. Catchup is enabled. At a November 7
-  startup this means processing November 4, 5 and 6 in order.
+  snapshotted history through November 3. Catchup is enabled. After 10:20 on
+  November 7, batches November 4, 5 and 6 are eligible, processed in order.
 - The DAG is paused on creation, allows one active run, and tasks depend on
   their previous run succeeding. There are two retries with a two-minute delay.
 - An optional `batch_date` parameter is available on the manual trigger form.

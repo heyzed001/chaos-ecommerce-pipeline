@@ -209,3 +209,78 @@ Existing PostgreSQL volumes and login/history are preserved; do not reset them.
 
 Runbook: `airflow/README.md`. Live DAG execution remains pending the user's
 activation. No changes from this phase were committed or pushed.
+
+## Failure notifications - Gmail and Slack
+
+Added a task-level final-failure callback that attempts Gmail/SMTP and Slack
+independently. Each channel is disabled until configured in ignored
+`airflow/.env`. Email uses TLS/SSL and a local App Password; Slack uses an HTTPS
+incoming webhook. No secrets are embedded in source or sent in alert bodies.
+Notifications include the failed task, DAG, run, batch date, error class and a
+log/dashboard link; raw exception text and environment variables are excluded.
+
+Added disabled local settings and documented Gmail App Password and Slack
+setup in `airflow/ALERTS.md`. The user still needs to provide sender/recipient,
+App Password and webhook locally before enabling channels and recreating
+services. There is no external monitor for a stopped laptop/Airflow instance.
+
+Validation: 100 local tests passed with all SMTP/HTTP delivery mocked; six real
+Airflow import/template checks passed, including callback attachment. No test
+messages were sent, and no DAG or Snowflake tasks ran. Live notification
+delivery is not yet verified. These changes have not been committed or pushed.
+
+Updated the daily schedule to 10:20 Africa/Lagos (10:20 AM) at the user's request,
+including the initial interval alignment. Set the local email recipient to
+kayodeabdulaziz@gmail.com. Gmail sender, SMTP username and App Password are
+still missing; email remains disabled. No test email or Slack message was sent.
+
+At the user's request, unpaused the DAG for immediate execution on November 7.
+An existing November 4 run had been paused after configuration validation.
+It resumed and all seven tasks succeeded, including live RAW loading, freshness,
+the dated snapshot and dbt build/tests. Catchup continues serially under the
+10:20 Lagos schedule. Changing the timetable also produced a second scheduled
+interval for the same November 4 batch; this reprocesses the date through the
+existing idempotent load/snapshot/MERGE behavior rather than appending copies.
+Gmail and Slack remain disabled because sender credentials and webhook are absent.
+
+## Brevo notifications and rerun count verification - 2026-11-08
+
+Current status supersedes the earlier pending Gmail setup: email is now enabled
+through Brevo SMTP, using port 587 and STARTTLS. The test message was accepted
+by Brevo and the user confirmed receipt at kayodeabdulaziz@gmail.com. Initial
+SMTP authentication attempts returned 525 due to IP restrictions; the user
+disabled SMTP IP blocking because the outgoing IP changes. Credentials remain
+in ignored airflow/.env. Running Airflow services were recreated with the
+working settings and verified healthy; no pipeline runs were active then.
+
+Task failures send an email after the initial attempt plus two retries. Added
+a DAG-level success callback to send one completion email per successful run,
+with batch date, run ID, start/end times and dashboard link. It applies to new
+completions, not earlier runs. Failures in notification delivery are logged
+without raw secret-bearing exception messages and do not undo pipeline work.
+Automatic success delivery still needs confirmation from a real DAG completion;
+the successful SMTP test alone does not prove callback execution.
+
+Slack/webhook configuration is deferred at the user's request and stays disabled.
+The daily timetable remains 10:20 Africa/Lagos. Local Docker/Airflow must be
+running and online for execution and notifications; no external uptime monitor
+or durable notification delivery queue has been added.
+
+Added ingestion/check_idempotency.py and optional capture_counts/verify_counts
+tasks around generation, ingestion, snapshots and dbt builds. Enable with the
+boolean manual-run parameter check_idempotency=true for an unchanged, already
+loaded latest batch. Normal daily runs leave it false and perform no count queries.
+Capture records all four RAW totals and selected-date counts, customer snapshot
+and customer/product dimension totals, fact total, and duplicate/null fact key
+counts. Verify fails on any count change or invalid fact keys. Baselines are
+stored per run in ignored Airflow logs and never silently overwritten. This is
+a read-only check around pipeline writes, not a rollback mechanism or a proof
+that every row's contents are identical. RAW source duplicates remain allowed.
+Run without concurrent external writers. See airflow/README.md for the command.
+
+Validation: 50 offline Airflow/ingestion checks passed with transport and database
+calls mocked. All eight actual Airflow DAG import/render checks passed in Docker.
+No live warehouse count comparison or pipeline rerun was launched for this change;
+those remain manual so a passing offline suite is not reported as live idempotency.
+Notification, schedule, count-check and documentation changes are being committed
+and pushed together at the user's request; local secrets and generated logs are excluded.
