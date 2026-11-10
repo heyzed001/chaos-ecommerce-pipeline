@@ -3,6 +3,8 @@
 set -euo pipefail
 
 python /opt/pipeline/scripts/validate_dag.py
+python -m pip check
+python -c 'import cosmos; print("Cosmos import passed.")'
 
 export PYTHONPATH=/opt/pipeline
 export PYTHONDONTWRITEBYTECODE=1

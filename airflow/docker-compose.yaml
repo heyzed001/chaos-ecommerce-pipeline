@@ -48,7 +48,7 @@ x-airflow-common:
   &airflow-common
   # Airflow's Python stays separate from the pipeline virtual environment.
   # Build from the repository root context; secrets are excluded by .dockerignore.
-  image: ${AIRFLOW_IMAGE_NAME:-chaos-airflow:3.2.2-python3.12}
+  image: ${AIRFLOW_IMAGE_NAME:-chaos-airflow:3.2.2-python3.12-cosmos1.16.0}
   build:
     context: ..
     dockerfile: airflow/Dockerfile

@@ -284,3 +284,69 @@ No live warehouse count comparison or pipeline rerun was launched for this chang
 those remain manual so a passing offline suite is not reported as live idempotency.
 Notification, schedule, count-check and documentation changes are being committed
 and pushed together at the user's request; local secrets and generated logs are excluded.
+
+## Count-task scheduling fix - 2026-11-09
+
+Today's scheduled run completed validation and dbt dependency preparation but
+waited at capture_counts without executing it. Airflow's failed-deps command
+confirmed that inherited depends_on_past=True required a previous count-task
+instance, although these tasks were absent from older runs. Set depends_on_past
+to False for capture_counts and verify_counts only. Data-processing tasks retain
+their prior-run dependency, the within-run chain stays intact, and max_active_runs
+remains one. Updated the Docker DAG checks to verify this distinction.
+All eight Docker DAG checks passed. The existing scheduled run resumed without
+clearing or rerunning completed tasks: capture_counts, generation and RAW loading
+succeeded, and source freshness was running at the follow-up check.
+
+## Cosmos model orchestration - 2026-11-10
+
+Replaced the single Bash build_models task with a Cosmos DbtTaskGroup of the
+same name. Cosmos 1.16.0 is pinned separately in airflow/requirements.txt, and
+the Docker image retains Airflow 3.2.2/Python 3.12. dbt remains isolated in
+/opt/pipeline-venv and is invoked with LOCAL/SUBPROCESS execution. The new image
+is chaos-airflow:3.2.2-python3.12-cosmos1.16.0; Compose services were recreated
+without deleting volumes or history.
+
+All 14 models are represented; ephemeral models use EmptyOperators and keep
+their tests. Model tests run after each model, with multi-parent tests detached
+to wait for their dependencies. Comparing the old dbt ls selection confirmed
+309 selected tests, including 24 RAW-source tests. These RAW tests run in a
+separate test_raw_sources task with cautious indirect selection because Cosmos
+source rendering is disabled and freshness already has its own task. Snapshot
+tests remain outside the selected model group, as in the previous build command.
+
+The snapshot task still runs before transformations; every Cosmos dbt task
+receives the same customer_snapshot_date variable. Existing MERGE/lookback and
+snapshot SQL are unchanged. Capture/verify count tasks, failure callbacks and
+the DAG success email are retained. At most four tasks and one batch run at a
+time. New Cosmos model/test task IDs explicitly ignore only their missing first
+past instance, then depend on previous scheduled success. The two ephemeral
+placeholders get the same first-run policy. RAW tests and optional count checks
+do not wait for historical instances that never existed.
+
+The image builds a credential-free manifest using placeholder profile settings
+and dbt parse. DAG rendering uses this manifest without Snowflake credentials
+or live dbt ls. Worker-only credentials remain in ignored local env files.
+Rebuild the image after dbt SQL/YAML/macro/package changes; instructions are in
+airflow/README.md. Cosmos uses native temporary artifact paths and exposes dbt
+output in individual Airflow task logs. Existing completed runs used a single
+build_models task; use a new run rather than clearing those old task instances.
+
+Validation: 50 offline tests and 12 actual Docker DAG checks passed, covering
+all model/singular-test selection, delivery-task coverage for every selected
+test, date rendering, graph ordering, first-run flags, callbacks and Airflow 3
+serialization. Both Python dependency checks, imports, dbt deps and dbt parse
+passed in the new container. All seven services were healthy. No manual pipeline
+run, model execution or warehouse test was launched as a validation step.
+The DAG was temporarily paused for migration; its existing enabled schedule is
+restored after validation, allowing normal catchup of any due scheduled batch.
+Changes remain local and have not been committed or pushed.
+
+After scheduling was restored, the due November 10 scheduled run started for
+the November 9 batch. All 64 task instances succeeded, including live generation,
+RAW ingestion, source freshness, RAW tests, the snapshot and Cosmos model/test
+tasks. The run started at 14:09:25 and ended at 14:15:38 Africa/Lagos on November
+10, with no failed/retrying tasks at the final check. This confirms the isolated
+executable/profile configuration and first-instance dependency handling work
+during actual execution. The scheduled run leaves check_idempotency=false, so
+successful count-task no-ops do not establish a live before/after comparison.

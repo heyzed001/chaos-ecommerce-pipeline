@@ -1,0 +1,2 @@
+# Installed in Airflow's Python, not the separate dbt environment.
+astronomer-cosmos==1.16.0

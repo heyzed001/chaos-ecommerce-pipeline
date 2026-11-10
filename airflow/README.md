@@ -5,8 +5,13 @@ Optional SMTP success/failure emails and Slack failure notifications are documen
 
 Airflow 3.2.2 runs in Docker with Celery, Redis and PostgreSQL. The custom image
 uses Python 3.12 and installs this project's requirements into a separate
-`/opt/pipeline-venv`. Airflow's own dependencies are not changed. Do not mount
+`/opt/pipeline-venv`. Pipeline dependencies stay separate from Airflow. Do not mount
 the Windows virtual environment into a Linux container.
+
+Cosmos 1.16.0 is pinned in `airflow/requirements.txt` and installed in Airflow's
+Python. The image pins Airflow itself to 3.2.2 and checks both environments for
+dependency conflicts. The image tag is
+`chaos-airflow:3.2.2-python3.12-cosmos1.16.0`.
 
 ## DAG and data dates
 
@@ -14,8 +19,46 @@ the Windows virtual environment into a Linux container.
 
 ```text
 validate_configuration -> prepare_dbt -> capture_counts -> generate_data -> load_raw
-    -> check_source_freshness -> snapshot_customers -> build_models -> verify_counts
+    -> check_source_freshness -> test_raw_sources -> snapshot_customers
+    -> build_models (Cosmos task group) -> verify_counts
 ```
+
+Expand **build_models** in the Airflow graph to see each dbt model and its tests.
+Cosmos uses the existing dbt executable through LOCAL/SUBPROCESS execution;
+dbt is not installed into Airflow's Python. All 14 models are represented,
+including no-op placeholders for the two ephemeral models whose tests still run.
+Multi-parent tests run after their model dependencies. RAW-source tests run in
+`test_raw_sources` with cautious indirect selection, preserving their coverage
+without repeating the existing freshness command. The snapshot remains a
+separate, date-controlled task before transformations. dbt's incremental MERGE
+configuration and snapshot logic are unchanged.
+
+The DAG runs one batch at a time with at most four concurrent tasks. Model/test
+tasks inherit retries and failure callbacks, and the final count check waits for
+the whole group. The DAG success email therefore waits for all model/tests and
+the optional count verification. Cosmos task IDs explicitly allow their first
+execution without historical task instances, then require their previous
+scheduled execution to succeed. Do not clear/replay old completed runs that
+used the former single `build_models` task; trigger a new run for the latest batch.
+
+Cosmos loads `/opt/pipeline/manifests/manifest.json`, generated during the image
+build using placeholder Snowflake settings and `dbt parse` (no warehouse queries).
+This keeps Snowflake credentials on the worker and avoids live `dbt ls` during
+DAG parsing. **Rebuild and recreate services after changing dbt SQL, YAML,
+dependencies or macros**, so the rendered graph matches the mounted project:
+
+```powershell
+# From airflow/, after active runs finish:
+docker compose build
+docker compose up -d --no-build
+docker compose exec airflow-dag-processor python /opt/pipeline/scripts/validate_dag.py
+```
+
+If `AIRFLOW_IMAGE_NAME` is customized in your local env file, ensure it points
+to the Cosmos-enabled image. Dependency preparation still runs once per batch.
+Individual Cosmos tasks use separate temporary working directories; inspect
+their dbt output in each Airflow task log. Cosmos manages its temporary target
+and log paths so its own result/warning processing can find the artifacts.
 
 For an idempotency check, manually rerun the latest successfully processed batch
 with `check_idempotency=true`. From PowerShell inside `airflow/` (replace the date
@@ -48,8 +91,11 @@ after writes and cannot roll them back if a mismatch is found.
 - Starts with **2026-11-04**, immediately after the manually loaded and
   snapshotted history through November 3. Catchup is enabled. After 10:20 on
   November 7, batches November 4, 5 and 6 are eligible, processed in order.
-- The DAG is paused on creation, allows one active run, and tasks depend on
-  their previous run succeeding. There are two retries with a two-minute delay.
+- The DAG is paused on creation and allows one active run. Data-processing tasks
+  depend on their previous run succeeding; optional count tasks only depend on
+  this run's upstream tasks, so introducing them does not block existing runs.
+  The new RAW-test task also starts without a prior-run dependency.
+  There are two retries with a two-minute delay.
 - An optional `batch_date` parameter is available on the manual trigger form.
   Supply it for manual runs. Only completed dates from November 4 onward are
   accepted. Historical RAW reloads before that date remain a separate manual
@@ -76,8 +122,9 @@ profile. This first local DAG uses `--target dev` with password authentication.
 Key-pair-only use requires a Linux key mount and a prod-target adaptation; a
 Windows private-key path is not usable inside Docker.
 
-dbt JSON artifacts and logs go under
-`airflow/logs/pipeline/<run-id>/<task-id>/`. Failures and retries are visible in
+Standalone dbt task JSON artifacts and logs go under
+`airflow/logs/pipeline/<run-id>/<task-id>/`; Cosmos task output is captured in
+the corresponding Airflow task logs. Failures and retries are visible in
 the Airflow task logs. The final dbt build runs the source/model tests selected
 by staging, intermediate and marts. Freshness runs separately after RAW loads.
 Freshness measures ingestion time, not the historical order dates.
